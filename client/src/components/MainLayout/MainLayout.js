@@ -9,24 +9,23 @@ export default function MainLayout() {
   const addImageHandler = (e) => {
     const imgPreviewDiv = document.getElementById("preview");
     const file = e.target.files[0];
-    const canvas = document.getElementById("my-canvas");
-    const context = canvas.getContext("2d");
-    const reader = new FileReader();
+    // const canvas = document.getElementById("my-canvas");
+    // const context = canvas.getContext("2d");
     const img = new Image();
-    img.src = window.URL.createObjectURL(file);
+    // img.src = window.URL.createObjectURL(file);
     img.onload = () => {
       imgPreviewDiv.appendChild(img);
-      setImgDim(`${img.width}×${img.height}`);
-      // imgPreviewDiv.insertAdjacentHTML(
-      //   "beforeend",
-      //   `<div>${file.name} ${img.width}×${img.height} ${file.type} ${Math.round(
-      //     file.size / 1024
-      //   )}KB<div>`
-      // );
+      // setImgDim(`${img.width}×${img.height}`);
+      imgPreviewDiv.insertAdjacentHTML(
+        "beforeend",
+        `<div>${file.name} ${img.width}×${img.height} ${file.type} ${Math.round(
+          file.size / 1024
+        )}KB<div>`
+      );
       window.URL.revokeObjectURL(img.src);
-      img.src = window.URL.createObjectURL(file);
-      context.drawImage(img, 0, 0);
+      // context.drawImage(img, 0, 0);
     };
+    img.src = window.URL.createObjectURL(file);
     setAddedImg(window.URL.createObjectURL(file));
   };
 
