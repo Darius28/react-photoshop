@@ -1,21 +1,43 @@
 import React, { useState } from "react";
 import "./MainLayout.css";
 import addImageIcon from "../../svg/image-regular.svg";
+import Resizer from "react-image-file-resizer";
 
 export default function MainLayout() {
   const [addedImg, setAddedImg] = useState();
   const [imgDim, setImgDim] = useState();
 
-  const addImageHandler = (e) => {
+  const resizeFile = (file) =>
+    new Promise((resolve) => {
+      Resizer.imageFileResizer(
+        file,
+        300,
+        300,
+        "JPEG",
+        100,
+        0,
+        (uri) => {
+          resolve(uri);
+        },
+        "file"
+      );
+    });
+
+  const addImageHandler = async (e) => {
     const imgPreviewDiv = document.getElementById("preview");
     const file = e.target.files[0];
-    // const canvas = document.getElementById("my-canvas");
-    // const context = canvas.getContext("2d");
+    const finalImage = await resizeFile(file);
+    console.log("file: ", file);
+    console.log(finalImage);
+    const canvas = document.getElementById("my-canvas");
+    const context = canvas.getContext("2d");
+
     const img = new Image();
-    // img.src = window.URL.createObjectURL(file);
+    console.log("finalImage: ", finalImage);
+    img.src = finalImage;
     img.onload = () => {
+      context.drawImage(img, 0, 0);
       imgPreviewDiv.appendChild(img);
-      // setImgDim(`${img.width}×${img.height}`);
       imgPreviewDiv.insertAdjacentHTML(
         "beforeend",
         `<div>${file.name} ${img.width}×${img.height} ${file.type} ${Math.round(
@@ -23,10 +45,23 @@ export default function MainLayout() {
         )}KB<div>`
       );
       window.URL.revokeObjectURL(img.src);
-      // context.drawImage(img, 0, 0);
     };
-    img.src = window.URL.createObjectURL(file);
-    setAddedImg(window.URL.createObjectURL(file));
+
+    // img.addEventListener("load", () => {
+    //   imgPreviewDiv.appendChild(img);
+    //   imgPreviewDiv.insertAdjacentHTML(
+    //     "beforeend",
+    //     `<div>${file.name} ${img.width}×${img.height} ${file.type} ${Math.round(
+    //       file.size / 1024
+    //     )}KB<div>`
+    //   );
+    //   window.URL.revokeObjectURL(img.src);
+    //   context.drawImage(finalImage, 0, 0);
+    // });
+
+    img.src = window.URL.createObjectURL(finalImage);
+
+    // setAddedImg(window.URL.createObjectURL(finalImage));
   };
 
   return (
