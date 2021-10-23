@@ -36,7 +36,18 @@ export default function MainLayout() {
     const canvas = document.getElementById("my-canvas");
     const context = canvas.getContext("2d");
     var image = document.getElementById("preview");
-    context.drawImage(image, 0, 0, 300, 300);
+    console.log(image.width, image.height);
+    const canvasWidth = canvas.width;
+    const canvasHeight = canvas.height;
+    const imageWidth = 300;
+    const imageHeight = 300;
+    context.drawImage(
+      image,
+      (canvasWidth - imageWidth) / 2,
+      (canvasHeight - imageHeight) / 2,
+      300,
+      300
+    );
     document.getElementById("preview").setAttribute("src", "");
   };
 
