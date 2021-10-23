@@ -19,56 +19,32 @@ export default function MainLayout() {
         (uri) => {
           resolve(uri);
         },
-        "file"
+        "base64"
       );
     });
 
-  const addImageHandler = async (e) => {
-    const imgPreviewDiv = document.getElementById("preview");
-    const file = e.target.files[0];
-    const finalImage = await resizeFile(file);
-    console.log("file: ", file);
-    console.log(finalImage);
+  const previewImageHandler = async (e) => {
+    var reader = new FileReader();
+    const finalImage = await resizeFile(e.target.files[0]);
+    reader.onload = (e) => {
+      document.getElementById("preview").setAttribute("src", finalImage);
+    };
+    reader.readAsDataURL(e.target.files[0]);
+  };
+
+  const confirmImageHandler = () => {
     const canvas = document.getElementById("my-canvas");
     const context = canvas.getContext("2d");
-
-    const img = new Image();
-    console.log("finalImage: ", finalImage);
-    img.src = finalImage;
-    img.onload = () => {
-      context.drawImage(img, 0, 0);
-      imgPreviewDiv.appendChild(img);
-      imgPreviewDiv.insertAdjacentHTML(
-        "beforeend",
-        `<div>${file.name} ${img.width}×${img.height} ${file.type} ${Math.round(
-          file.size / 1024
-        )}KB<div>`
-      );
-      window.URL.revokeObjectURL(img.src);
-    };
-
-    // img.addEventListener("load", () => {
-    //   imgPreviewDiv.appendChild(img);
-    //   imgPreviewDiv.insertAdjacentHTML(
-    //     "beforeend",
-    //     `<div>${file.name} ${img.width}×${img.height} ${file.type} ${Math.round(
-    //       file.size / 1024
-    //     )}KB<div>`
-    //   );
-    //   window.URL.revokeObjectURL(img.src);
-    //   context.drawImage(finalImage, 0, 0);
-    // });
-
-    img.src = window.URL.createObjectURL(finalImage);
-
-    // setAddedImg(window.URL.createObjectURL(finalImage));
+    var image = document.getElementById("preview");
+    context.drawImage(image, 0, 0, 300, 300);
+    document.getElementById("preview").setAttribute("src", "");
   };
 
   return (
     <>
       <div className="container">
         <div className="canvas-container">
-          <canvas id="my-canvas" />
+          <canvas id="my-canvas" width={1000} height={500} />
         </div>
         <div className="options-container">
           <div className="add-image-container">
@@ -85,15 +61,18 @@ export default function MainLayout() {
                   type="file"
                   className="add-image-input-tag"
                   id="add-image-tag"
-                  onChange={addImageHandler}
+                  onChange={previewImageHandler}
                 />
                 <h5>Add Image</h5>
               </div>
+              <div>
+                <img id="preview" />
+              </div>
+              <button onClick={confirmImageHandler}>Confirm Image</button>
             </label>
           </div>
         </div>
       </div>
-      <div id="preview"></div>
     </>
   );
 }
